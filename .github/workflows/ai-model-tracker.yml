@@ -1,0 +1,180 @@
+name: AI Model Tracker
+
+on:
+  schedule:
+    # Run twice daily (6 AM and 6 PM UTC) for timely updates while staying within free tier limits
+    - cron: '0 6 * * *'
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+    inputs:
+      force_refresh:
+        description: 'Force refresh all data (ignore cache)'
+        required: false
+        type: boolean
+        default: false
+      ai_mode:
+        description: 'AI validation mode: zen (minimal) or go (comprehensive)'
+        required: false
+        type: choice
+        options:
+          - zen
+          - go
+        default: 'go'
+      skip_ai_validation:
+        description: 'Skip AI validation step'
+        required: false
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - 'tracker/**'
+      - '.github/scripts/**'
+      - 'scripts/**'
+      - 'frontend/**'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ai-model-tracker
+  cancel-in-progress: false
+
+env:
+  TRACKER_DIR: 'tracker'
+  JSON_OUT: 'public/model-status.json'
+  CACHE_DIR: '.cache'
+  AI_CACHE_DIR: '.cache/ai'
+  NODE_VERSION: '20'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install jsonschema requests feedparser toml
+
+      - name: Validate registry
+        run: bash .github/scripts/validate-registry.sh
+
+  fetch-data:
+    needs: validate
+    runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.commit-check.outputs.has_changes }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install jsonschema requests feedparser toml
+
+      - name: Fetch model data
+        env:
+          HF_API_BASE: https://huggingface.co/api
+          HF_RATE_LIMIT_PER_HOUR: 50
+        run: |
+          if [[ "${{ github.event.inputs.force_refresh }}" == "true" ]]; then
+            echo "Force refresh requested, clearing cache..."
+            rm -rf .cache
+          fi
+          bash .github/scripts/fetch-model-data.sh
+
+      - name: AI Validation and Enrichment
+        if: ${{ github.event.inputs.skip_ai_validation != 'true' }}
+        env:
+          OPENCODE_API_TOKEN: ${{ secrets.OPENCODE_API_TOKEN }}
+          AI_MODE: ${{ github.event.inputs.ai_mode || 'go' }}
+          CONFIG_FILE: tracker/config.toml
+        run: |
+          bash .github/scripts/ai-validation/ai-validate-models.sh tracker/registry
+
+      - name: Generate model-status.json
+        run: bash .github/scripts/generate-model-json.sh
+
+      - name: Check for changes
+        id: commit-check
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.commit-check.outputs.has_changes == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "chore: update model data [skip ci]" || exit 0
+          git push
+
+  build-pages:
+    needs: fetch-data
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          cache-dependency-path: 'frontend/pnpm-lock.yaml'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: pnpm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+  deploy:
+    needs: build-pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

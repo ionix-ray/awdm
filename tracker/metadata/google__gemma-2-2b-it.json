@@ -1,0 +1,45 @@
+{
+  "modelId": "google/gemma-2-2b-it",
+  "name": "gemma-2-2b-it",
+  "provider": "google",
+  "releaseDate": "2024-07-16T10:51:39.000Z",
+  "lastCheckedAt": "2026-09-04T06:53:29.152935+00:00",
+  "isFree": true,
+  "freeTier": {
+    "available": true,
+    "limits": {},
+    "conditions": ""
+  },
+  "specifications": {
+    "parameters": "unknown",
+    "contextWindow": null,
+    "architecture": "transformers",
+    "modality": [
+      "text"
+    ]
+  },
+  "availability": {
+    "hosted": [
+      "huggingface"
+    ],
+    "openWeights": true,
+    "license": ""
+  },
+  "benchmarks": {},
+  "newsReferences": [],
+  "validationFlags": {
+    "communityVerified": true,
+    "officialAnnouncement": false,
+    "anomalyDetected": false,
+    "confidenceScore": 85
+  },
+  "sources": [
+    "huggingface"
+  ],
+  "tracked": true,
+  "categories": [
+    "llm",
+    "text-generation"
+  ],
+  "priority": "high"
+}

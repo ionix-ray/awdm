@@ -1,0 +1,45 @@
+{
+  "modelId": "meta-llama/Llama-3.2-1B",
+  "name": "Llama-3.2-1B",
+  "provider": "meta-llama",
+  "releaseDate": "2024-09-18T15:03:14.000Z",
+  "lastCheckedAt": "2026-09-04T06:53:29.427102+00:00",
+  "isFree": true,
+  "freeTier": {
+    "available": true,
+    "limits": {},
+    "conditions": ""
+  },
+  "specifications": {
+    "parameters": "unknown",
+    "contextWindow": null,
+    "architecture": "transformers",
+    "modality": [
+      "text"
+    ]
+  },
+  "availability": {
+    "hosted": [
+      "huggingface"
+    ],
+    "openWeights": true,
+    "license": ""
+  },
+  "benchmarks": {},
+  "newsReferences": [],
+  "validationFlags": {
+    "communityVerified": true,
+    "officialAnnouncement": false,
+    "anomalyDetected": false,
+    "confidenceScore": 85
+  },
+  "sources": [
+    "huggingface"
+  ],
+  "tracked": true,
+  "categories": [
+    "llm",
+    "text-generation"
+  ],
+  "priority": "critical"
+}

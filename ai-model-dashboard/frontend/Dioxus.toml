@@ -1,0 +1,18 @@
+[application]
+name = "ai-model-dashboard"
+default_platform = "web"
+out_dir = "dist"
+
+[web.app]
+title = "AI Model Intelligence Dashboard"
+# base_path is set dynamically in CI for GitHub Pages
+
+[web.watcher]
+reload_html = true
+watch_path = ["src", "assets"]
+
+[web.resource.dev]
+style = []
+
+[[web.resource]]
+style = "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"

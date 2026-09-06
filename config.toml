@@ -1,0 +1,213 @@
+# AI Model Intelligence Dashboard Configuration
+
+[general]
+name = "AI Model Intelligence Dashboard"
+version = "1.0.0"
+description = "Real-time intelligence on AI model releases, free tiers, and updates"
+github_pages_url = "https://ionix-ray.github.io/aml"
+
+[ai]
+# Mode: "zen" (cost-optimized) or "go" (max capability)
+mode = "zen"
+default_model = "anthropic/claude-sonnet-4-5"
+token_usage_limit = 50000  # tokens per run
+budget_limit_usd = 5.00    # daily budget limit
+
+# AI Providers (dynamic configuration)
+[[ai.providers]]
+name = "opencode"
+type = "opencode"
+base_url = "https://api.opencode.ai/v1"
+api_key_env = "OPENCODE_API_KEY"
+enabled = true
+priority = 1
+
+[[ai.providers]]
+name = "orca-router"
+type = "openai-compatible"
+base_url = "https://orca.router.local/v1"
+api_key_env = "ORCA_API_KEY"
+enabled = false
+priority = 2
+
+[[ai.providers]]
+name = "openai"
+type = "openai-compatible"
+base_url = "https://api.openai.com/v1"
+api_key_env = "OPENAI_API_KEY"
+enabled = false
+priority = 3
+
+[[ai.providers]]
+name = "anthropic"
+type = "anthropic"
+base_url = "https://api.anthropic.com/v1"
+api_key_env = "ANTHROPIC_API_KEY"
+enabled = false
+priority = 4
+
+[[ai.providers]]
+name = "groq"
+type = "openai-compatible"
+base_url = "https://api.groq.com/openai/v1"
+api_key_env = "GROQ_API_KEY"
+enabled = true
+priority = 5
+
+# AI Prompts for validation
+[[ai.prompts]]
+name = "model_verification"
+mode = "zen"
+temperature = 0.1
+max_tokens = 500
+system_prompt = """You are an AI model verification expert. Verify if the following model information is accurate and grounded in reality. 
+Respond ONLY with valid JSON matching this schema:
+{
+  "verified": boolean,
+  "confidence": number (0-100),
+  "issues": string[],
+  "sources": string[]
+}
+"""
+user_prompt_template = """Verify this model information:
+Model: {model_name}
+Provider: {provider}
+Release Date: {release_date}
+Parameters: {parameters}
+Free Tier: {free_tier}
+Sources: {sources}
+
+Is this information accurate? Are there any anomalies or red flags?"""
+
+[[ai.prompts]]
+name = "free_tier_validation"
+mode = "zen"
+temperature = 0.2
+max_tokens = 400
+system_prompt = """You are an expert in AI pricing and free tier analysis. Validate free tier claims.
+Respond ONLY with valid JSON:
+{
+  "is_free": boolean,
+  "free_limits": {"rpm": number, "rpd": number, "tokens": number},
+  "conditions": string,
+  "verified": boolean
+}
+"""
+user_prompt_template = """Validate the free tier claim for:
+Model: {model_name}
+Claimed Free Tier: {free_tier_details}
+Provider: {provider}
+
+What are the actual free limits? Are there hidden conditions?"""
+
+[[ai.prompts]]
+name = "benchmark_analysis"
+mode = "go"
+temperature = 0.3
+max_tokens = 800
+system_prompt = """You are an AI benchmarking expert. Analyze and validate benchmark scores.
+Respond ONLY with valid JSON:
+{
+  "benchmarks": [{"name": string, "score": number, "verified": boolean}],
+  "anomalies": string[],
+  "confidence": number
+}
+"""
+user_prompt_template = """Analyze these benchmarks:
+Model: {model_name}
+Benchmarks: {benchmark_data}
+
+Are these scores realistic? Any anomalies detected?"""
+
+[[ai.prompts]]
+name = "news_sentiment"
+mode = "zen"
+temperature = 0.2
+max_tokens = 300
+system_prompt = """Analyze news sentiment about AI models.
+Respond ONLY with valid JSON:
+{
+  "sentiment": "positive" | "neutral" | "negative",
+  "key_points": string[],
+  "credibility": number (0-100)
+}
+"""
+user_prompt_template = """Analyze this news article:
+Title: {title}
+Content: {content}
+Source: {source}
+
+What is the sentiment and credibility?"""
+
+[sources]
+# Data sources configuration
+update_frequency_hours = 12  # Run twice daily
+max_concurrent_requests = 5
+retry_attempts = 3
+timeout_seconds = 30
+
+[[sources.huggingface]]
+enabled = true
+api_url = "https://huggingface.co/api/models"
+rate_limit_per_minute = 60
+cache_ttl_hours = 6
+
+[[sources.github]]
+enabled = true
+api_url = "https://api.github.com"
+rate_limit_per_hour = 1000
+cache_ttl_hours = 3
+
+[[sources.reddit]]
+enabled = true
+subreddits = ["LocalLLaMA", "artificial", "MachineLearning"]
+rate_limit_per_minute = 30
+cache_ttl_hours = 2
+
+[[sources.rss]]
+enabled = true
+feeds = [
+  "https://huggingface.co/blog/feed.xml",
+  "https://openai.com/blog/feed/",
+  "https://www.anthropic.com/rss/latest",
+  "https://googleblog.blogspot.com/atom.xml"
+]
+cache_ttl_hours = 4
+
+[validation]
+# Validation rules
+schema_strict_mode = true
+require_cross_source_verification = true
+min_confidence_threshold = 70
+auto_reject_anomalies = true
+
+[security]
+# Security settings
+enable_csp = true
+sanitize_html = true
+validate_json_schema = true
+atomic_writes = true
+backup_enabled = true
+max_backups = 5
+
+[github_actions]
+# GitHub Actions optimization
+schedule = "0 6,18 * * *"  # Twice daily at 6 AM and 6 PM UTC
+timeout_minutes = 30
+concurrency_group = "ai-dashboard-build"
+cache_enabled = true
+artifact_retention_days = 7
+
+[frontend]
+# Dioxus frontend configuration
+framework = "dioxus"
+output_dir = "dist"
+wasm_opt_level = "z"  # Optimize for size
+cdn_prefix = "https://cdn.jsdelivr.net/npm/"
+carbon_version = "10.58.0"
+
+[monitoring]
+# Microsoft Clarity integration
+clarity_project_id = ""  # Set via GitHub secret
+enable_analytics = true
+log_level = "info"

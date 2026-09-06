@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ionix-ray/story/tracker/schemas/metadata-record.schema.json",
+  "title": "AI Model Metadata Record",
+  "description": "Observed STATE for one AI model from various sources. Bot-owned, regenerated on each sync run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["modelId"],
+  "properties": {
+    "modelId": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "releaseDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastCheckedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "isFree": {
+      "type": "boolean"
+    },
+    "freeTier": {
+      "type": "object",
+      "properties": {
+        "available": { "type": "boolean" },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "rpm": { "type": "number" },
+            "rpd": { "type": "number" },
+            "tokens": { "type": "number" }
+          }
+        },
+        "conditions": { "type": "string" }
+      }
+    },
+    "specifications": {
+      "type": "object",
+      "properties": {
+        "parameters": { "type": "string" },
+        "contextWindow": { "type": "number" },
+        "architecture": { "type": "string" },
+        "modality": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "benchmarks": {
+      "type": "object",
+      "properties": {
+        "source": { "type": "string" },
+        "scores": { "type": "object" }
+      }
+    },
+    "availability": {
+      "type": "object",
+      "properties": {
+        "hosted": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "openWeights": { "type": "boolean" },
+        "license": { "type": "string" }
+      }
+    },
+    "newsReferences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "source": { "type": "string" },
+          "publishedAt": { "type": "string", "format": "date-time" },
+          "sentiment": { "type": "string", "enum": ["positive", "neutral", "negative"] }
+        }
+      }
+    },
+    "validationFlags": {
+      "type": "object",
+      "properties": {
+        "communityVerified": { "type": "boolean" },
+        "officialAnnouncement": { "type": "boolean" },
+        "anomalyDetected": { "type": "boolean" },
+        "confidenceScore": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

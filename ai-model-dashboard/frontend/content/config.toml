@@ -1,0 +1,212 @@
+# AI Model Dashboard Configuration
+# ==================================
+# This file configures AI providers, validation prompts, and data sources.
+# All values are read at compile-time by the frontend and runtime by GitHub Actions.
+
+# =============================================================================
+# Default Settings
+# =============================================================================
+
+[default]
+mode = "zen"  # "zen" for cost-effective, "go" for maximum capability
+
+# =============================================================================
+# AI Provider Configuration
+# =============================================================================
+# Add multiple providers for fallback and model comparison.
+# The system will try providers in order until one succeeds.
+
+[[ai_providers]]
+name = "opencode"
+base_url = "https://api.opencode.ai/v1"
+api_key_env = "OPENCODE_API_KEY"
+models = [
+  "anthropic/claude-sonnet-4-5",
+  "anthropic/claude-opus",
+  "openai/gpt-4-turbo"
+]
+
+[[ai_providers]]
+name = "orca_router"
+base_url = "https://router.orca.ai/v1"
+api_key_env = "ORCA_API_KEY"
+models = [
+  "meta-llama/llama-3-70b-instruct",
+  "mistralai/mixtral-8x22b-instruct"
+]
+
+[[ai_providers]]
+name = "custom_gateway"
+base_url = "https://your-gateway.com/v1"
+api_key_env = "CUSTOM_GATEWAY_KEY"
+models = [
+  "google/gemini-pro",
+  "cohere/command-r-plus"
+]
+
+# =============================================================================
+# Validation Prompts
+# =============================================================================
+# Each prompt is designed for a specific validation task.
+# Mode determines cost vs thoroughness tradeoff.
+
+[[validation_prompts]]
+name = "fact_check_release"
+mode = "zen"
+prompt_template = """
+You are an AI model release validator. Analyze the following model information and verify:
+1. Is this a legitimate model release from the stated provider?
+2. Are the specifications (parameters, context window) accurate?
+3. Is the free tier information correct?
+
+Model Data:
+{model_data}
+
+Respond in JSON format with this exact schema:
+{{
+  "verified": boolean,
+  "confidence": number (0.0-1.0),
+  "issues": ["list of any discrepancies found"],
+  "sources": [" URLs or references used for verification"]
+}}
+
+If you cannot verify, set verified=false and explain why."""
+max_tokens = 1000
+temperature = 0.3
+output_schema = "fact_check_response"
+
+[[validation_prompts]]
+name = "extract_free_tier"
+mode = "zen"
+prompt_template = """
+Extract free tier information from the following text. Be precise about limits.
+
+Text: {text_content}
+
+Respond in JSON format with this exact schema:
+{{
+  "is_free": boolean,
+  "rpm": number or null,
+  "rpd": number or null,
+  "token_limit": number or null,
+  "conditions": "string describing any conditions"
+}}
+
+Only extract explicitly stated limits. Do not infer or assume."""
+max_tokens = 500
+temperature = 0.1
+output_schema = "free_tier_response"
+
+[[validation_prompts]]
+name = "anomaly_detection"
+mode = "go"
+prompt_template = """
+You are an anomaly detection expert for AI models. Analyze this model's claimed specifications 
+and identify any red flags or anomalies that seem unrealistic or suspicious.
+
+Model Specifications:
+{specifications}
+
+Benchmark Claims:
+{benchmarks}
+
+Respond in JSON format with this exact schema:
+{{
+  "anomalies_detected": boolean,
+  "anomaly_details": ["list of specific anomalies"],
+  "credibility_score": number (0.0-1.0),
+  "recommendation": "string with verification recommendations"
+}}
+
+Be critical but fair. Flag only genuinely suspicious claims."""
+max_tokens = 1500
+temperature = 0.2
+output_schema = "anomaly_response"
+
+[[validation_prompts]]
+name = "sentiment_analysis"
+mode = "zen"
+prompt_template = """
+Analyze the sentiment of this news article about an AI model release.
+
+Article Title: {title}
+Article Content: {content}
+
+Respond in JSON format with this exact schema:
+{{
+  "sentiment": "positive" | "neutral" | "negative",
+  "confidence": number (0.0-1.0),
+  "key_points": ["brief summary of main points"]
+}}"""
+max_tokens = 600
+temperature = 0.3
+output_schema = "sentiment_response"
+
+[[validation_prompts]]
+name = "cross_source_verification"
+mode = "go"
+prompt_template = """
+Cross-verify this model information across multiple sources.
+
+Primary Source Data: {primary_data}
+Secondary Sources: {secondary_sources}
+
+Respond in JSON format with this exact schema:
+{{
+  "consensus": boolean,
+  "discrepancies": ["list of conflicting information"],
+  "verified_fields": ["fields that match across sources"],
+  "unverified_fields": ["fields that could not be verified"]
+}}"""
+max_tokens = 2000
+temperature = 0.2
+output_schema = "cross_verification_response"
+
+# =============================================================================
+# Data Sources Configuration
+# =============================================================================
+# Authentic sources for scraping model information.
+
+[[data_sources]]
+name = "huggingface_api"
+url = "https://huggingface.co/api/models"
+scrape_interval_hours = 6
+requires_auth = false
+
+[[data_sources]]
+name = "github_releases"
+url = "https://api.github.com/repos/{owner}/{repo}/releases"
+scrape_interval_hours = 12
+requires_auth = true
+
+[[data_sources]]
+name = "reddit_localllama"
+url = "https://www.reddit.com/r/LocalLLaMA/new.json"
+scrape_interval_hours = 3
+requires_auth = false
+
+[[data_sources]]
+name = "official_blogs_rss"
+url = "https://feeds.feedburner.com/OpenAIBlog"
+scrape_interval_hours = 6
+requires_auth = false
+
+# =============================================================================
+# Schedule Configuration
+# =============================================================================
+
+[schedule]
+cron_expression = "0 6 * * *"  # Daily at 6 AM UTC
+timezone = "UTC"
+max_runs_per_day = 2
+
+# =============================================================================
+# Model Selection Strategy
+# =============================================================================
+
+[model_selection]
+enabled = true
+check_availability = true
+fallback_order = ["opencode", "orca_router", "custom_gateway"]
+timeout_seconds = 30
+max_retries = 3
