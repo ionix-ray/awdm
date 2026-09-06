@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ionix-ray/story/tracker/schemas/config.schema.json",
+  "title": "AI Model Tracker Configuration",
+  "description": "Global configuration for the AI model tracking system",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "schedule"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "schedule": {
+      "type": "string",
+      "pattern": "^(\\*|[0-9]+(-[0-9]+)?(\\/[0-9]+)?|\\*(\\/[0-9]+)?)\\s+(\\*|[0-9]+(-[0-9]+)?(\\/[0-9]+)?|\\*(\\/[0-9]+)?)\\s+(\\*|[0-9]+(-[0-9]+)?(\\/[0-9]+)?|\\*(\\/[0-9]+)?)\\s+(\\*|[0-9]+(-[0-9]+)?(\\/[0-9]+)?|\\*(\\/[0-9]+)?)\\s+(\\*|[0-9]+(-[0-9]+)?(\\/[0-9]+)?|\\*(\\/[0-9]+)?)$"
+    },
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "priority": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low"]
+        },
+        "categories": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "properties": {
+        "huggingface": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "rateLimitPerHour": { "type": "integer" }
+          }
+        },
+        "github": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" }
+          }
+        },
+        "rss": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "feeds": {
+              "type": "array",
+              "items": { "type": "string", "format": "uri" }
+            }
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "minConfidenceScore": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    }
+  }
+}

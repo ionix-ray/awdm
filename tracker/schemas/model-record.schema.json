@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ionix-ray/story/tracker/schemas/model-record.schema.json",
+  "title": "AI Model Registry Record",
+  "description": "Declared INTENT for tracking one AI model. Human/PR-owned. One file per model so registration is purely additive and never conflicts.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["modelId", "name", "provider", "tracked"],
+  "properties": {
+    "modelId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.\\-/]+$",
+      "description": "Unique identifier, typically provider/model-name format"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable model name"
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Organization or company providing the model"
+    },
+    "tracked": {
+      "type": "boolean",
+      "description": "Whether this model should be actively tracked"
+    },
+    "pause_reason": {
+      "type": "string",
+      "description": "Reason if tracking is paused"
+    },
+    "categories": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Model categories: llm, vision, audio, multimodal, embedding, etc."
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low"],
+      "default": "medium",
+      "description": "Tracking priority level"
+    }
+  }
+}

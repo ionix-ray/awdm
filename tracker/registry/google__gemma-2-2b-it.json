@@ -1,0 +1,8 @@
+{
+  "modelId": "google/gemma-2-2b-it",
+  "name": "Gemma 2 2B IT",
+  "provider": "Google",
+  "tracked": true,
+  "categories": ["llm", "text-generation"],
+  "priority": "high"
+}

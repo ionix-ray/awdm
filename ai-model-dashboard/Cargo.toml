@@ -1,0 +1,27 @@
+[workspace]
+members = ["frontend", "shared"]
+resolver = "2"
+
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+authors = ["AI Model Dashboard Team"]
+license = "MIT"
+repository = "https://github.com/ionix-ray/ai-model-dashboard"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 0
+debug = true
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"

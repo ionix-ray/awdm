@@ -1,0 +1,184 @@
+{
+  "metadata": {
+    "generatedAt": "2026-09-04T06:53:32.863234+00:00",
+    "version": 1,
+    "schedule": "0 */6 * * *",
+    "sources": [
+      "huggingface"
+    ]
+  },
+  "summary": {
+    "totalModels": 3,
+    "freeModels": 3,
+    "newReleasesLast7Days": 0,
+    "highConfidenceModels": 3,
+    "uniqueProviders": 3,
+    "topCategories": {
+      "llm": 3,
+      "text-generation": 3
+    }
+  },
+  "providers": {
+    "google": 1,
+    "meta-llama": 1,
+    "mistralai": 1
+  },
+  "models": [
+    {
+      "modelId": "google/gemma-2-2b-it",
+      "name": "gemma-2-2b-it",
+      "provider": "google",
+      "tracked": true,
+      "categories": [
+        "llm",
+        "text-generation"
+      ],
+      "priority": "high",
+      "releaseDate": "2024-07-16T10:51:39.000Z",
+      "lastCheckedAt": "2026-09-04T06:53:29.152935+00:00",
+      "isFree": true,
+      "freeTier": {
+        "available": true,
+        "limits": {},
+        "conditions": ""
+      },
+      "specifications": {
+        "parameters": "unknown",
+        "contextWindow": null,
+        "architecture": "transformers",
+        "modality": [
+          "text"
+        ]
+      },
+      "availability": {
+        "hosted": [
+          "huggingface"
+        ],
+        "openWeights": true,
+        "license": ""
+      },
+      "benchmarks": {},
+      "newsReferences": [],
+      "validationFlags": {
+        "communityVerified": true,
+        "officialAnnouncement": false,
+        "anomalyDetected": false,
+        "confidenceScore": 85
+      },
+      "sources": [
+        "huggingface"
+      ],
+      "_computed": {
+        "relevanceScore": 53,
+        "daysSinceRelease": 779,
+        "isNewRelease": false,
+        "hasFreeTier": true,
+        "generatedAt": "2026-09-04T06:53:32.863234+00:00"
+      }
+    },
+    {
+      "modelId": "meta-llama/Llama-3.2-1B",
+      "name": "Llama-3.2-1B",
+      "provider": "meta-llama",
+      "tracked": true,
+      "categories": [
+        "llm",
+        "text-generation"
+      ],
+      "priority": "critical",
+      "releaseDate": "2024-09-18T15:03:14.000Z",
+      "lastCheckedAt": "2026-09-04T06:53:29.427102+00:00",
+      "isFree": true,
+      "freeTier": {
+        "available": true,
+        "limits": {},
+        "conditions": ""
+      },
+      "specifications": {
+        "parameters": "unknown",
+        "contextWindow": null,
+        "architecture": "transformers",
+        "modality": [
+          "text"
+        ]
+      },
+      "availability": {
+        "hosted": [
+          "huggingface"
+        ],
+        "openWeights": true,
+        "license": ""
+      },
+      "benchmarks": {},
+      "newsReferences": [],
+      "validationFlags": {
+        "communityVerified": true,
+        "officialAnnouncement": false,
+        "anomalyDetected": false,
+        "confidenceScore": 85
+      },
+      "sources": [
+        "huggingface"
+      ],
+      "_computed": {
+        "relevanceScore": 53,
+        "daysSinceRelease": 715,
+        "isNewRelease": false,
+        "hasFreeTier": true,
+        "generatedAt": "2026-09-04T06:53:32.863234+00:00"
+      }
+    },
+    {
+      "modelId": "mistralai/Mistral-7B-Instruct-v0.3",
+      "name": "Mistral-7B-Instruct-v0.3",
+      "provider": "mistralai",
+      "tracked": true,
+      "categories": [
+        "llm",
+        "text-generation"
+      ],
+      "priority": "high",
+      "releaseDate": "2024-05-22T09:57:04.000Z",
+      "lastCheckedAt": "2026-09-04T06:53:28.908613+00:00",
+      "isFree": true,
+      "freeTier": {
+        "available": true,
+        "limits": {},
+        "conditions": ""
+      },
+      "specifications": {
+        "parameters": "unknown",
+        "contextWindow": null,
+        "architecture": "vllm",
+        "modality": [
+          "text"
+        ]
+      },
+      "availability": {
+        "hosted": [
+          "huggingface"
+        ],
+        "openWeights": true,
+        "license": ""
+      },
+      "benchmarks": {},
+      "newsReferences": [],
+      "validationFlags": {
+        "communityVerified": true,
+        "officialAnnouncement": false,
+        "anomalyDetected": false,
+        "confidenceScore": 85
+      },
+      "sources": [
+        "huggingface"
+      ],
+      "_computed": {
+        "relevanceScore": 53,
+        "daysSinceRelease": 834,
+        "isNewRelease": false,
+        "hasFreeTier": true,
+        "generatedAt": "2026-09-04T06:53:32.863234+00:00"
+      }
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+// Carbon Design System customization with rounded corners
+@use '@carbon/styles' with (
+  $font-path: '@carbon/styles',
+);
+
+// Import Carbon styles
+@import '@carbon/styles/index.scss';
+
+// Custom font imports - IBM Plex Sans and Mono
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+// Global styles
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #161616;
+  background-color: #f4f4f4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+// Carbon component overrides for rounded corners
+.cds--btn {
+  border-radius: 8px !important;
+}
+
+.cds--search {
+  border-radius: 8px !important;
+}
+
+.cds--search-input {
+  border-radius: 8px !important;
+}
+
+.cds--tag {
+  border-radius: 8px !important;
+}
+
+.cds--tile {
+  border-radius: 12px !important;
+}
+
+// Custom scrollbar
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f4f4f4;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #8d8d8d;
+  border-radius: 4px;
+  
+  &:hover {
+    background: #6f6f6f;
+  }
+}
+
+// Utility classes
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  html, body {
+    font-size: 14px;
+  }
+  
+  .cds--search--lg {
+    min-height: 48px;
+  }
+}
+
+// Loading animation
+.cds--loading__stroke {
+  animation: rotate 1.5s linear infinite;
+  
+  circle {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 25;
+    animation: dash 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 100, 200;
+    stroke-dashoffset: -15;
+  }
+  100% {
+    stroke-dasharray: 100, 200;
+    stroke-dashoffset: -125;
+  }
+}
+
+// Focus visible for accessibility
+:focus-visible {
+  outline: 2px solid #0f62fe;
+  outline-offset: 2px;
+}
+
+// Print styles
+@media print {
+  .filter-panel,
+  .pagination,
+  .search-bar-container {
+    display: none !important;
+  }
+}

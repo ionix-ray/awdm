@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "schedule": "0 */6 * * *",
+  "defaults": {
+    "priority": "medium",
+    "categories": ["llm", "vision", "multimodal"]
+  },
+  "sources": {
+    "huggingface": {
+      "enabled": true,
+      "rateLimitPerHour": 50
+    },
+    "github": {
+      "enabled": true
+    },
+    "rss": {
+      "enabled": true,
+      "feeds": [
+        "https://huggingface.co/blog/feed.xml",
+        "https://openai.com/blog/feed/",
+        "https://www.anthropic.com/rss/latest"
+      ]
+    }
+  },
+  "validation": {
+    "enabled": true,
+    "minConfidenceScore": 60
+  }
+}

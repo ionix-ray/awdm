@@ -1,0 +1,221 @@
+# OpenCode AI Configuration
+# This file controls AI-powered validation and enrichment in the pipeline
+
+[general]
+# Mode: "zen" (minimal AI, cost-effective) or "go" (full AI validation, comprehensive)
+mode = "go"
+# Default model to use (will be overridden by auto-detection if enabled)
+default_model = "anthropic/claude-sonnet-4-5"
+# Enable automatic model capability testing
+auto_detect_best_model = true
+# Models to test for capability and free tier availability
+models_to_test = [
+  "anthropic/claude-sonnet-4-5",
+  "openai/gpt-4o-mini",
+  "google/gemini-1.5-flash",
+  "meta/llama-3.1-70b-instruct",
+  "mistral/mistral-large-2407"
+]
+
+[opencode]
+# Server configuration
+server_port = 4096
+# API token (stored in GitHub Secrets as OPENCODE_API_TOKEN)
+api_token_env = "OPENCODE_API_TOKEN"
+# Base URL for custom gateway
+base_url = "https://your-gateway.com"
+# Provider package
+provider_npm = "@ai-sdk/openai-compatible"
+provider_name = "Custom Gateway"
+
+# Auto-update configuration
+autoupdate = true
+
+[prompts]
+# Prompt for validating model release information
+validate_model_release = """
+You are an AI model verification expert. Validate the following model release information:
+
+Model: {model_name}
+Provider: {provider}
+Release Date: {release_date}
+Parameters: {parameters}
+Context Window: {context_window}
+License: {license}
+
+Tasks:
+1. Verify if this model exists and the release date is accurate
+2. Confirm the specifications (parameters, context window) are correct
+3. Check if the license information is accurate
+4. Identify any anomalies or suspicious claims
+
+Output format (strictly follow this JSON schema):
+{
+  "isValid": boolean,
+  "confidenceScore": number (0-100),
+  "verifiedFields": ["field1", "field2"],
+  "discrepancies": [{"field": "string", "expected": "string", "actual": "string"}],
+  "anomalies": ["description of any anomalies"],
+  "sources": ["verification source URLs"]
+}
+"""
+
+# Prompt for checking free tier availability
+check_free_tier = """
+Analyze the pricing and access tiers for this AI model:
+
+Model: {model_name}
+Provider: {provider}
+Current Claims: {free_tier_claims}
+
+Tasks:
+1. Verify if the model has a free tier
+2. Identify rate limits (RPM, RPD, token limits)
+3. Check conditions and restrictions
+4. Compare with competitor pricing
+
+Output format (strictly follow this JSON schema):
+{
+  "isFree": boolean,
+  "freeTier": {
+    "available": boolean,
+    "limits": {
+      "rpm": number|null,
+      "rpd": number|null,
+      "tokens": number|null
+    },
+    "conditions": "string"
+  },
+  "paidTiers": [{"name": "string", "price": "string", "limits": {}}],
+  "competitorComparison": [{"provider": "string", "model": "string", "price": "string"}],
+  "confidenceScore": number (0-100)
+}
+"""
+
+# Prompt for benchmark validation
+validate_benchmarks = """
+Verify the benchmark scores for this AI model:
+
+Model: {model_name}
+Claimed Benchmarks: {benchmarks}
+
+Tasks:
+1. Cross-reference benchmark scores with official leaderboards
+2. Check if evaluation methodology is standard
+3. Identify potential cherry-picking or misleading metrics
+4. Suggest additional relevant benchmarks
+
+Output format (strictly follow this JSON schema):
+{
+  "validatedBenchmarks": {
+    "benchmark_name": {
+      "score": number,
+      "verified": boolean,
+      "source": "url",
+      "percentile": number
+    }
+  },
+  "discrepancies": [{"benchmark": "string", "claimed": number, "actual": number}],
+  "missingBenchmarks": ["benchmark names that should be included"],
+  "methodologyIssues": ["description of issues"],
+  "overallConfidence": number (0-100)
+}
+"""
+
+# Prompt for news sentiment analysis
+analyze_news_sentiment = """
+Analyze news articles and announcements about this AI model:
+
+Model: {model_name}
+News Articles: {news_articles}
+
+Tasks:
+1. Determine overall sentiment (positive/neutral/negative)
+2. Extract key claims and announcements
+3. Identify credible sources vs speculation
+4. Flag any controversial claims
+
+Output format (strictly follow this JSON schema):
+{
+  "overallSentiment": "positive|neutral|negative",
+  "articles": [
+    {
+      "title": "string",
+      "url": "string",
+      "source": "string",
+      "sentiment": "positive|neutral|negative",
+      "keyClaims": ["claim1", "claim2"],
+      "credibilityScore": number (0-100)
+    }
+  ],
+  "controversialClaims": [{"claim": "string", "reason": "string"}],
+  "consensusView": "string"
+}
+"""
+
+# Prompt for generating model summary
+generate_model_summary = """
+Create a concise, informative summary for this AI model:
+
+Model: {model_name}
+Specifications: {specifications}
+Benchmarks: {benchmarks}
+Availability: {availability}
+Validation Results: {validation_results}
+
+Tasks:
+1. Write a 2-3 sentence summary highlighting key features
+2. Mention unique selling points
+3. Note any limitations or restrictions
+4. Include practical use cases
+
+Output format (strictly follow this JSON schema):
+{
+  "summary": "string (max 300 characters)",
+  "highlights": ["highlight1", "highlight2", "highlight3"],
+  "limitations": ["limitation1", "limitation2"],
+  "useCases": ["use case 1", "use case 2"],
+  "targetAudience": "developers|researchers|enterprise|general"
+}
+"""
+
+[validation]
+# Schema validation settings
+enable_schema_validation = true
+# Require minimum confidence score for auto-approval
+min_confidence_score = 70
+# Maximum number of AI retries on validation failure
+max_retries = 3
+# Timeout for AI API calls (seconds)
+timeout_seconds = 30
+# Enable cross-validation with multiple models
+enable_cross_validation = false
+# Number of different models to use for cross-validation
+cross_validation_count = 2
+
+[rate_limits]
+# API calls per hour (to stay within free tier)
+max_api_calls_per_hour = 50
+# Max concurrent AI requests
+max_concurrent_requests = 3
+# Delay between requests (milliseconds)
+request_delay_ms = 1000
+
+[caching]
+# Enable response caching
+enabled = true
+# Cache TTL in seconds
+ttl_seconds = 86400
+# Cache directory
+cache_dir = ".cache/ai"
+
+[github_actions]
+# Run AI validation only on specific triggers
+run_on_schedule = true
+run_on_manual = true
+# Skip AI validation for minor updates (e.g., typo fixes)
+skip_for_minor_updates = true
+# Create PR with AI changes before merging
+create_pr = true
+# Require manual review for low-confidence validations
+require_review_below_score = 60
