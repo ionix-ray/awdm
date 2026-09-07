@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; 
+                   script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.clarity.ms; 
+                   style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; 
+                   img-src 'self' data: https:; 
+                   font-src 'self' https://cdn.jsdelivr.net;
+                   connect-src 'self' https://api.opencode.ai https://orca.router.local https://www.clarity.ms;">
+    <meta name="description" content="Real-time intelligence on AI model releases, free tiers, and updates for developers and researchers">
+    <title>AI Model Intelligence Dashboard</title>
+    
+    <!-- Carbon Design System -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@carbon/styles@1.78.0/css.min.css" integrity="sha256-..." crossorigin="anonymous">
+    
+    <!-- IBM Plex Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --cds-font-family: 'IBM Plex Sans', sans-serif;
+            --cds-code-font-family: 'IBM Plex Mono', monospace;
+            --cds-border-radius-default: 8px;
+        }
+        
+        body {
+            font-family: var(--cds-font-family);
+            margin: 0;
+            padding: 0;
+        }
+        
+        code, pre {
+            font-family: var(--cds-code-font-family);
+        }
+        
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: var(--cds-border-radius-default);
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Error boundary styling */
+        .error-boundary {
+            background-color: #fff1f1;
+            border: 1px solid #da1e28;
+            border-radius: var(--cds-border-radius-default);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        /* Responsive grid */
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .model-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .app-container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="main"></div>
+    
+    <!-- Microsoft Clarity Analytics -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "${CLARITY_PROJECT_ID}");
+    </script>
+    
+    <!-- WASM Bundle -->
+    <script type="module">
+        import init from './ai-dashboard.js';
+        init().catch(err => {
+            console.error('Failed to initialize WASM:', err);
+            document.getElementById('main').innerHTML = `
+                <div class="error-boundary">
+                    <h2>Failed to load application</h2>
+                    <p>Please refresh the page or check your connection.</p>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
