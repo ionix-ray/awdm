@@ -1,0 +1,100 @@
+{
+  "mock_ai_responses": {
+    "model_verification": {
+      "verified": true,
+      "confidence": 95,
+      "issues": [],
+      "sources": ["https://huggingface.co/google/gemma-2-9b-it", "https://blog.google/technology/developers/introducing-gemma-2/"]
+    },
+    "free_tier_validation": {
+      "is_free": true,
+      "free_limits": {
+        "rpm": 60,
+        "rpd": 1000,
+        "tokens": 128000
+      },
+      "conditions": "Available via Hugging Face Inference API with rate limits",
+      "verified": true
+    },
+    "benchmark_analysis": {
+      "benchmarks": [
+        {"name": "mmlu", "score": 72.3, "verified": true},
+        {"name": "gsm8k", "score": 84.2, "verified": true},
+        {"name": "human_eval", "score": 28.5, "verified": true}
+      ],
+      "anomalies": [],
+      "confidence": 92
+    },
+    "news_sentiment": {
+      "sentiment": "positive",
+      "key_points": [
+        "Most capable open model from Google",
+        "Improved reasoning and coding capabilities",
+        "Efficient architecture for edge deployment"
+      ],
+      "credibility": 98
+    }
+  },
+  "error_cases": {
+    "rate_limit_exceeded": {
+      "error": {
+        "type": "rate_limit_error",
+        "message": "Rate limit exceeded. Please retry after 60 seconds.",
+        "retry_after": 60
+      }
+    },
+    "invalid_json_response": "This is not valid JSON response",
+    "missing_required_fields": {
+      "verified": true
+    },
+    "provider_unavailable": {
+      "error": {
+        "type": "service_unavailable",
+        "message": "Provider service temporarily unavailable"
+      }
+    }
+  },
+  "edge_cases": {
+    "empty_model_list": {
+      "metadata": {
+        "lastUpdated": "2024-01-15T10:30:00Z",
+        "sources": [],
+        "validationStatus": "no_data"
+      },
+      "models": []
+    },
+    "model_with_null_values": {
+      "id": "test-nulls",
+      "name": "Test Model",
+      "provider": null,
+      "releaseDate": null,
+      "isFree": false,
+      "freeTier": {
+        "available": false,
+        "limits": null,
+        "conditions": ""
+      },
+      "specifications": {
+        "parameters": "unknown",
+        "contextWindow": 0,
+        "architecture": "",
+        "modality": []
+      },
+      "validationFlags": {
+        "communityVerified": false,
+        "officialAnnouncement": false,
+        "anomalyDetected": false,
+        "confidence": 0
+      }
+    },
+    "extreme_benchmark_scores": {
+      "benchmarks": {
+        "source": "Unknown",
+        "scores": {
+          "mmlu": 150.0,
+          "gsm8k": -10.0
+        }
+      }
+    }
+  }
+}
